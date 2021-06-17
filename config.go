@@ -8,9 +8,13 @@ import (
 type Config struct {
 	CronSpec string `required:"true" split_words:"true"`
 	Interval int32 `required:"true" split_words:"true"`
+	KafkaTopic string `required:"true" split_words:"true"`
+	KafkaHost string `required:"true" split_words:"true"`
+	KafkaPort int32 `required:"true" split_words:"true"`
 	ListenInterface string `required:"true" split_words:"true"`
 	Promisc bool `required:"true" split_words:"true"`
 	WriteLocation string `required:"true" split_words:"true"`
+	WriteCsvLocation string `required:"true" split_words:"true"`
 }
 
 func GetConfig() *Config {
