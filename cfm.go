@@ -20,21 +20,25 @@ func getCSVPath(sourcePath string, destPath string) string {
 }
 
 func RunFlowmeter(source string, config *Config) error {
-	cfmExecutable, errLookPath := exec.LookPath("CICFlowMeter")
+	javaExecutable, errLookPath := exec.LookPath("java")
 	if errLookPath != nil {
-		fmt.Println("Cannot find CICFlowMeter executable in your system. Try add cicflowmeter-cli package in your $PATH")
+		fmt.Println("Cannot find Java executable in your system. Try install Java first")
+		return errors.New("error processing PCAP")
+	}
+
+	if _, err := os.Stat(config.CICFlowmeterPath); os.IsNotExist(err) {
+		fmt.Println("Cannot find CICFlowmeter.jar in your system.")
 		return errors.New("error processing PCAP")
 	}
 
 	cmd := &exec.Cmd{
-		Path:   cfmExecutable,
-		Args:   []string{cfmExecutable, source},
+		Path:   javaExecutable,
+		Args:   []string{javaExecutable, "-jar", config.CICFlowmeterPath, source},
 		Stdout: os.Stdout,
 		Stderr: os.Stdout,
 	}
 
 	// set CFM Environment Variables
-	cmd.Env = append(cmd.Env, "DEFAULT_JVM_OPTS=\"\"-Djava.library.path=$APP_HOME/lib/native\"\"")
 	cmd.Env = append(cmd.Env, "KAFKA_TOPIC="+config.KafkaTopic)
 	cmd.Env = append(cmd.Env, "KAFKA_HOST="+config.KafkaHost)
 	cmd.Env = append(cmd.Env, "KAFKA_PORT="+strconv.Itoa(int(config.KafkaPort)))
