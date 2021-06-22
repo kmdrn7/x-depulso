@@ -8,8 +8,11 @@ import (
 	"github.com/google/gopacket/pcapgo"
 	"github.com/robfig/cron/v3"
 	"os"
+	"strconv"
 	"time"
 )
+
+var err error
 
 func Run(config *Config) {
 	handler, errHandler := pcap.OpenLive(
@@ -29,12 +32,12 @@ func Run(config *Config) {
 
 	fileLocation := config.WriteLocation
 	c := cron.New(cron.WithSeconds())
-	_, err := c.AddFunc(config.CronSpec, func() {
+
+	_, err = c.AddFunc(config.CronSpec, func() {
 		t := time.Now()
 		tt := fmt.Sprintf("%d-%02d-%02d_%02d:%02d:%02d",
 			t.Year(), t.Month(), t.Day(),
-			t.Hour(), t.Minute(), t.Second(),
-		)
+			t.Hour(), t.Minute(), t.Second())
 		fileName := fmt.Sprintf("%s-%s.pcap", "traffics", tt)
 		path := fileLocation + fileName
 		f, _ := os.Create(path)
@@ -69,7 +72,14 @@ func Run(config *Config) {
 		}
 	})
 
+	pcapRetention := strconv.Itoa(int(config.DaysRetention))
+	_, err = c.AddFunc("0 0 0 */"+pcapRetention+" * *", func() {
+		WriteLog("Cleaning stored PCAP data older than "+pcapRetention+" days")
+		RunCleaner(time.Duration(config.DaysRetention), config.WriteLocation)
+	})
+
 	c.Run()
+
 	if err != nil {
 		return
 	}

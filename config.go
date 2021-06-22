@@ -7,6 +7,8 @@ import (
 
 type Config struct {
 	CronSpec string `required:"true" split_words:"true"`
+	CICFlowmeterPath string `required:"true" envconfig:"CICFLOWMETER_PATH"`
+	DaysRetention int32 `required:"true" split_words:"true"`
 	Interval int32 `required:"true" split_words:"true"`
 	KafkaTopic string `required:"true" split_words:"true"`
 	KafkaHost string `required:"true" split_words:"true"`

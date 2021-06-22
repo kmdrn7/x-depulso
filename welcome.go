@@ -21,11 +21,13 @@ Cron Spec : %s
 Promiscuous Mode : %s 
 PCAP Write Location : %s
 CSV Write Location : %s
+PCAP File Retention : %s days
+CICFlowmeter Path : %s
 Kafka Topic : %s
 Kafka Host : %s
 Kafka Port : %s
 =========================================
-	`
+`
 	fmt.Println(
 		fmt.Sprintf(
 			message,
@@ -35,6 +37,8 @@ Kafka Port : %s
 			strconv.FormatBool(bool(config.Promisc)),
 			config.WriteLocation,
 			config.WriteCsvLocation,
+			strconv.Itoa(int(config.DaysRetention)),
+			config.CICFlowmeterPath,
 			config.KafkaTopic,
 			config.KafkaHost,
 			strconv.Itoa(int(config.KafkaPort)),
