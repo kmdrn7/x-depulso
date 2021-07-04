@@ -42,6 +42,7 @@ func RunFlowmeter(source string, config *Config) error {
 	cmd.Env = append(cmd.Env, "KAFKA_TOPIC="+config.KafkaTopic)
 	cmd.Env = append(cmd.Env, "KAFKA_HOST="+config.KafkaHost)
 	cmd.Env = append(cmd.Env, "KAFKA_PORT="+strconv.Itoa(int(config.KafkaPort)))
+	cmd.Env = append(cmd.Env, "SILENT_MODE=1")
 
 	errStart := cmd.Start()
 	if errStart != nil {
