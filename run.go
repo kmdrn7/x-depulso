@@ -81,7 +81,7 @@ func Run(config *Config) {
 	})
 
 	_, err = c.AddFunc("*/5 * * * * *", func() {
-		timeout := 1000 * time.Millisecond
+		timeout := 10000 * time.Millisecond
 		client := httpclient.NewClient(httpclient.WithHTTPTimeout(timeout))
 		_, err := client.Get(config.MLServerUrl+"/api/v1/sensor/"+config.SensorSerial+"/healthz", nil)
 		if err != nil {
