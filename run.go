@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/gojek/heimdall/v7/httpclient"
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
 	"github.com/google/gopacket/pcap"
@@ -31,6 +32,8 @@ func Run(config *Config) {
 	).Packets()
 
 	fileLocation := config.WriteLocation
+	pcapRetention := strconv.Itoa(int(config.DaysRetention))
+
 	c := cron.New(cron.WithSeconds())
 
 	_, err = c.AddFunc(config.CronSpec, func() {
@@ -72,10 +75,19 @@ func Run(config *Config) {
 		}
 	})
 
-	pcapRetention := strconv.Itoa(int(config.DaysRetention))
 	_, err = c.AddFunc("0 0 0 */"+pcapRetention+" * *", func() {
-		WriteLog("Cleaning stored PCAP data older than "+pcapRetention+" days")
+		WriteLog("Cleaning stored PCAP data older than " + pcapRetention + " days")
 		RunCleaner(time.Duration(config.DaysRetention), config.WriteLocation)
+	})
+
+	_, err = c.AddFunc("*/5 * * * * *", func() {
+		timeout := 1000 * time.Millisecond
+		client := httpclient.NewClient(httpclient.WithHTTPTimeout(timeout))
+		_, err := client.Get(config.MLServerUrl+"/api/v1/sensor/"+config.SensorSerial+"/healthz", nil)
+		if err != nil {
+			panic(err)
+		}
+		WriteLog("Sending healthcheck ping to mlserver")
 	})
 
 	c.Run()
