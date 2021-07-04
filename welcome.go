@@ -7,7 +7,7 @@ import (
 
 func PrintMessage(config *Config){
 	message := `
-	____  __________  __  ____   _____ ____ 
+    ____  __________  __  ____   _____ ____ 
    / __ \/ ____/ __ \/ / / / /  / ___// __ \
   / / / / __/ / /_/ / / / / /   \__ \/ / / /
  / /_/ / /___/ ____/ /_/ / /______/ / /_/ / 
@@ -26,7 +26,10 @@ CICFlowmeter Path : %s
 Kafka Topic : %s
 Kafka Host : %s
 Kafka Port : %s
+Sensor Serial : %s
+MLServer Url : %s
 =========================================
+::::::::::::: ===========================
 `
 	fmt.Println(
 		fmt.Sprintf(
@@ -42,6 +45,8 @@ Kafka Port : %s
 			config.KafkaTopic,
 			config.KafkaHost,
 			strconv.Itoa(int(config.KafkaPort)),
+			config.SensorSerial,
+			config.MLServerUrl,
 		),
 	)
 }
