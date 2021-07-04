@@ -7,7 +7,7 @@ COPY go.mod go.sum /build/
 RUN apt update -y && apt install libpcap-dev -y
 RUN GOMAXPROCS=1 go mod download
 COPY *.go /build/
-RUN GOMAXPROCS=1 GOOS=linux GOARCH=arm GOARM=7 go build -a -o depulso .
+RUN GOMAXPROCS=1 go build -a -o depulso .
 
 # target image
 FROM adoptopenjdk:8-jre-hotspot
