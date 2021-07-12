@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/gojek/heimdall/v7/httpclient"
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
 	"github.com/google/gopacket/pcap"
@@ -81,9 +80,7 @@ func Run(config *Config) {
 	})
 
 	_, err = c.AddFunc("*/5 * * * * *", func() {
-		timeout := 10000 * time.Millisecond
-		client := httpclient.NewClient(httpclient.WithHTTPTimeout(timeout))
-		_, err := client.Get(config.MLServerUrl+"/api/v1/sensor/"+config.SensorSerial+"/healthz", nil)
+		_, err := ApiClient.Get(config.MLServerUrl+"/api/v1/sensor/"+config.SensorSerial+"/healthz", nil)
 		if err != nil {
 			panic(err)
 		}

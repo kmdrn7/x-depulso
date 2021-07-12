@@ -18,4 +18,5 @@ RUN mkdir /data
 COPY --from=kmdr7/cicflowmeter:1.0 /app/CICFlowmeter.jar /app/CICFlowmeter.jar
 COPY lib/$TARGETPLATFORM/* /lib/
 COPY --from=builder /build/depulso /app/depulso
+COPY .env.default /app/.env
 CMD ["/app/depulso"]
