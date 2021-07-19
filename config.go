@@ -2,9 +2,11 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/kelseyhightower/envconfig"
 	"io/ioutil"
 	"log"
+	"strconv"
 )
 
 type Config struct {
@@ -42,7 +44,7 @@ type SensorResponse struct {
 type ConfigResponse struct {
 	KafkaTopic string `json:"KAFKA_TOPIC"`
 	KafkaHost string `json:"KAFKA_HOST"`
-	KafkaPort int32 `json:"KAFKA_PORT"`
+	KafkaPort string `json:"KAFKA_PORT"`
 	ListenInterface string `json:"LISTEN_INTERFACE"`
 }
 
@@ -56,6 +58,7 @@ func UpdateConfigFromServer(config *Config) {
 	if errBody != nil {
 		panic(errBody)
 	}
+	fmt.Println(string(b))
 
 	// Unmarshal response body
 	var body SensorResponse
@@ -75,7 +78,15 @@ func UpdateConfigFromServer(config *Config) {
 
 	// Update local config with data fetched from server
 	config.KafkaHost = configResponse.KafkaHost
-	config.KafkaPort = configResponse.KafkaPort
+	config.KafkaPort = parseInt(configResponse.KafkaPort)
 	config.KafkaTopic = configResponse.KafkaTopic
 	config.ListenInterface = configResponse.ListenInterface
+}
+
+func parseInt(port string) int32 {
+	i, err := strconv.ParseInt(port, 10, 32)
+	if err != nil {
+		panic(err)
+	}
+	return int32(i)
 }
